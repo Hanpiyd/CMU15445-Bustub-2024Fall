@@ -26,10 +26,30 @@ namespace bustub {
 // NOLINTNEXTLINE
 auto Planner::GetFuncCallFromFactory(const std::string &func_name, std::vector<AbstractExpressionRef> args)
     -> AbstractExpressionRef {
+  if (!std::is_same<decltype(func_name), std::string>::value || !std::is_same<decltype(args), std::vector<AbstractExpressionRef>>::value) {
+    throw Exception(fmt::format("func call {} not supported in planner yet", func_name));
+  }
   // 1. check if the parsed function name is "lower" or "upper".
-  // 2. verify the number of args (should be 1), refer to the test cases for when you should throw an `Exception`.
-  // 3. return a `StringExpression` std::shared_ptr.
-  throw Exception(fmt::format("func call {} not supported in planner yet", func_name));
-}
-
+  if(func_name=="lower"||func_name=="upper"){
+    // 2. verify the number of args (should be 1), refer to the test cases for when you should throw an `Exception`.
+    if(args.size()!=1){
+      throw Exception(fmt::format("func call {} not supported in planner yet", func_name));
+    }
+    else{
+      // 3. return a `StringExpression` std::shared_ptr.
+      AbstractExpressionRef arg=args[0];
+      StringExpressionType arg2;
+      if(func_name=="lower"){
+        arg2=StringExpressionType::Lower;
+      }
+      else{
+        arg2=StringExpressionType::Upper;
+      }
+      return std::make_shared<StringExpression>(arg,arg2);
+    }
+  }
+  else{
+    throw Exception(fmt::format("func call {} not supported in planner yet", func_name));
+  }
+    }
 }  // namespace bustub

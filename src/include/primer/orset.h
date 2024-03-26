@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 namespace bustub {
 
@@ -13,7 +14,6 @@ template <typename T>
 class ORSet {
  public:
   ORSet() = default;
-
   /**
    * @brief Checks if an element is in the set.
    *
@@ -60,6 +60,8 @@ class ORSet {
 
  private:
   // TODO(student): Add your private memeber variables to represent ORSet.
+  std::vector<std::pair<T,uid_t>>v;
+  std::vector<std::pair<T,uid_t>>d;
 };
 
 }  // namespace bustub
