@@ -1,0 +1,5 @@
+add_test( BufferPoolManagerTest.BinaryDataTest /home/jyh/bustub-private/build_rel/test/buffer_pool_manager_test [==[--gtest_filter=BufferPoolManagerTest.BinaryDataTest]==] --gtest_also_run_disabled_tests [==[--gtest_output=xml:/home/jyh/bustub-private/build_rel/test/buffer_pool_manager_test.xml]==] [==[--gtest_catch_exceptions=0]==])
+set_tests_properties( BufferPoolManagerTest.BinaryDataTest PROPERTIES WORKING_DIRECTORY /home/jyh/bustub-private/build_rel/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==] TIMEOUT 120)
+add_test( BufferPoolManagerTest.SampleTest /home/jyh/bustub-private/build_rel/test/buffer_pool_manager_test [==[--gtest_filter=BufferPoolManagerTest.SampleTest]==] --gtest_also_run_disabled_tests [==[--gtest_output=xml:/home/jyh/bustub-private/build_rel/test/buffer_pool_manager_test.xml]==] [==[--gtest_catch_exceptions=0]==])
+set_tests_properties( BufferPoolManagerTest.SampleTest PROPERTIES WORKING_DIRECTORY /home/jyh/bustub-private/build_rel/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==] TIMEOUT 120)
+set( buffer_pool_manager_test_TESTS BufferPoolManagerTest.BinaryDataTest BufferPoolManagerTest.SampleTest)

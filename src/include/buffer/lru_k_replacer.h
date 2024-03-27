@@ -12,12 +12,12 @@
 
 #pragma once
 
+#include <algorithm>
 #include <limits>
 #include <list>
 #include <mutex>  // NOLINT
 #include <unordered_map>
 #include <vector>
-#include <algorithm>
 #include "common/config.h"
 #include "common/macros.h"
 
@@ -54,7 +54,7 @@ class LRUKReplacer {
   /**
    *
    * TODO(P1): Add implementation
-   * 
+   *
    * @brief a new LRUKReplacer.
    * @param num_frames the maximum number of frames the LRUReplacer will be required to store
    */
@@ -161,16 +161,16 @@ class LRUKReplacer {
   std::mutex latch_;
 
   using timestamp = std::list<size_t>;
-  using k_time = std::pair<frame_id_t,size_t>;
-  std::unordered_map<frame_id_t,timestamp> hist;
-  std::unordered_map<frame_id_t,size_t> recorded_cnt_;
-  std::unordered_map<frame_id_t,bool> evictable_;
+  using k_time = std::pair<frame_id_t, size_t>;
+  std::unordered_map<frame_id_t, timestamp> hist_;
+  std::unordered_map<frame_id_t, size_t> recorded_cnt_;
+  std::unordered_map<frame_id_t, bool> evictable_;
 
   std::list<frame_id_t> mem_frame_;
-  std::unordered_map<frame_id_t,std::list<frame_id_t>::iterator> mem_locate_;
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> mem_locate_;
   std::list<k_time> cache_frame_;
-  std::unordered_map<frame_id_t,std::list<k_time>::iterator> cache_locate_;
-  static auto CmpTimestamp(const k_time &f1,const k_time &f2) -> bool;
+  std::unordered_map<frame_id_t, std::list<k_time>::iterator> cache_locate_;
+  static auto CmpTimestamp(const k_time &f1, const k_time &f2) -> bool;
 };
 
 }  // namespace bustub

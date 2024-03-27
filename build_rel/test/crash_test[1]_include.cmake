@@ -1,0 +1,5 @@
+if(EXISTS "/home/jyh/bustub-private/build_rel/test/crash_test[1]_tests.cmake")
+  include("/home/jyh/bustub-private/build_rel/test/crash_test[1]_tests.cmake")
+else()
+  add_test(crash_test_NOT_BUILT crash_test_NOT_BUILT)
+endif()

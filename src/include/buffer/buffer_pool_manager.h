@@ -195,6 +195,9 @@ class BufferPoolManager {
   std::mutex latch_;
   /** This buffer is for the leaderboard task. You may want to use it to optimize the write requests. */
   WriteBackCache write_back_cache_ __attribute__((__unused__));
+  friend class BasicPageGuard;
+  friend class ReadPageGuard;
+  friend class WritePageGuard;
 
   /**
    * @brief Allocate a page on disk. Caller should acquire the latch before calling this function.

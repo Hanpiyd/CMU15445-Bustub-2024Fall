@@ -1,0 +1,3 @@
+add_test( DiskSchedulerTest.ScheduleWriteReadPageTest /home/jyh/bustub-private/build_rel/test/disk_scheduler_test [==[--gtest_filter=DiskSchedulerTest.ScheduleWriteReadPageTest]==] --gtest_also_run_disabled_tests [==[--gtest_output=xml:/home/jyh/bustub-private/build_rel/test/disk_scheduler_test.xml]==] [==[--gtest_catch_exceptions=0]==])
+set_tests_properties( DiskSchedulerTest.ScheduleWriteReadPageTest PROPERTIES WORKING_DIRECTORY /home/jyh/bustub-private/build_rel/test SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==] TIMEOUT 120)
+set( disk_scheduler_test_TESTS DiskSchedulerTest.ScheduleWriteReadPageTest)

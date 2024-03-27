@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace bustub {
 
@@ -60,8 +60,8 @@ class ORSet {
 
  private:
   // TODO(student): Add your private memeber variables to represent ORSet.
-  std::vector<std::pair<T,uid_t>>v;
-  std::vector<std::pair<T,uid_t>>d;
+  std::vector<std::pair<T, uid_t>> v_;
+  std::vector<std::pair<T, uid_t>> d_;
 };
 
 }  // namespace bustub
