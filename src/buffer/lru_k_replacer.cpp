@@ -18,8 +18,9 @@ namespace bustub {
 LRUKReplacer::LRUKReplacer(size_t num_frames, size_t k) : replacer_size_(num_frames), k_(k) { max_size_ = num_frames; }
 
 auto LRUKReplacer::Evict(frame_id_t *frame_id) -> bool {
-  std::lock_guard<std::mutex> lock(latch_);
+   std::scoped_lock<std::mutex> lock(latch_);
   if (Size() == 0) {
+    latch_.unlock();
     return false;
   } else {
     for (auto it = mem_frame_.rbegin(); it != mem_frame_.rend(); it++) {
@@ -31,6 +32,7 @@ auto LRUKReplacer::Evict(frame_id_t *frame_id) -> bool {
         *frame_id = frame;
         curr_size_--;
         hist_[frame].clear();
+        latch_.unlock();
         return true;
       }
     }
@@ -44,9 +46,11 @@ auto LRUKReplacer::Evict(frame_id_t *frame_id) -> bool {
         *frame_id = frame;
         curr_size_--;
         hist_[frame].clear();
+        latch_.unlock();
         return true;
       }
     }
+    latch_.unlock();
     return false;
   }
 }
@@ -71,6 +75,7 @@ void LRUKReplacer::RecordAccess(frame_id_t frame_id, [[maybe_unused]] AccessType
     curr_size_++;
     mem_frame_.push_front(frame_id);
     mem_locate_[frame_id] = mem_frame_.begin();
+    latch_.unlock();
   }
   if (cnt == k_) {
     mem_frame_.erase(mem_locate_[frame_id]);
@@ -80,6 +85,7 @@ void LRUKReplacer::RecordAccess(frame_id_t frame_id, [[maybe_unused]] AccessType
     auto it = std::upper_bound(cache_frame_.begin(), cache_frame_.end(), new_cache, CmpTimestamp);
     it = cache_frame_.insert(it, new_cache);
     cache_locate_[frame_id] = it;
+    latch_.unlock();
     return;
   }
   if (cnt > k_) {
@@ -91,16 +97,20 @@ void LRUKReplacer::RecordAccess(frame_id_t frame_id, [[maybe_unused]] AccessType
     auto it = std::upper_bound(cache_frame_.begin(), cache_frame_.end(), new_cache, CmpTimestamp);
     it = cache_frame_.insert(it, new_cache);
     cache_locate_[frame_id] = it;
+    latch_.unlock();
     return;
   }
+  latch_.unlock();
 }
 
 void LRUKReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
-  std::lock_guard<std::mutex> lock(latch_);
+  std::scoped_lock<std::mutex> lock(latch_);
   if (frame_id > static_cast<frame_id_t>(replacer_size_)) {
+    latch_.unlock();
     throw std::exception();
   }
   if (recorded_cnt_[frame_id] == 0) {
+    latch_.unlock();
     return;
   }
   auto status = evictable_[frame_id];
@@ -113,19 +123,23 @@ void LRUKReplacer::SetEvictable(frame_id_t frame_id, bool set_evictable) {
     curr_size_++;
     max_size_++;
   }
+  latch_.unlock();
   return;
 }
 
 void LRUKReplacer::Remove(frame_id_t frame_id) {
-  std::lock_guard<std::mutex> lock(latch_);
+  std::scoped_lock<std::mutex> lock(latch_);
   if (frame_id > static_cast<frame_id_t>(replacer_size_)) {
+    latch_.unlock();
     throw std::exception();
   }
   auto cnt = recorded_cnt_[frame_id];
   if (cnt == 0) {
+    latch_.unlock();
     return;
   }
   if (!evictable_[frame_id]) {
+    latch_.unlock();
     throw std::exception();
   }
   if (cnt < k_) {
@@ -134,6 +148,7 @@ void LRUKReplacer::Remove(frame_id_t frame_id) {
     recorded_cnt_[frame_id] = 0;
     hist_[frame_id].clear();
     curr_size_--;
+    latch_.unlock();
     return;
   } else {
     cache_frame_.erase(cache_locate_[frame_id]);
@@ -141,6 +156,7 @@ void LRUKReplacer::Remove(frame_id_t frame_id) {
     recorded_cnt_[frame_id] = 0;
     hist_[frame_id].clear();
     curr_size_--;
+    latch_.unlock();
     return;
   }
 }
