@@ -101,9 +101,9 @@ auto ExtendibleHTableBucketPage<K, V, KC>::IsEmpty() const -> bool {
 
 template <typename K, typename V, typename KC>
 void ExtendibleHTableBucketPage<K, V, KC>::Clear() {
-  for(auto i = 0;i<size_;i++){
-    array_[i] = array_[size_];
-  }
+  /* for(auto i = 0;i<size_;i++){
+    RemoveAt(0);
+  } */
   size_ = 0;
 }
 

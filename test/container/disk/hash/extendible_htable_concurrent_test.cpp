@@ -132,7 +132,6 @@ TEST(ExtendibleHTableConcurrentTest, InsertTest1) {
     keys.push_back(key);
   }
   LaunchParallelTest(2, InsertHelper, &ht, keys);
-
   std::vector<RID> rids;
   GenericKey<8> index_key;
   for (auto key : keys) {

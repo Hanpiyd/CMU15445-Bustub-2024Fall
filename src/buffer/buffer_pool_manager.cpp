@@ -48,13 +48,11 @@ auto BufferPoolManager::NewPage(page_id_t *page_id) -> Page * {
     page = pages_ + id;
   } else {
     if (!replacer_->Evict(&id)) {
-      latch_.unlock();
       return nullptr;
     }
     page = pages_ + id;
   }
   if (!page) {
-    latch_.unlock();
     return nullptr;
   }
   if (page->IsDirty()) {
@@ -72,7 +70,6 @@ auto BufferPoolManager::NewPage(page_id_t *page_id) -> Page * {
   page->ResetMemory();
   replacer_->RecordAccess(id);
   replacer_->SetEvictable(id, false);
-  latch_.unlock();
   return page;
 }
 
@@ -87,7 +84,6 @@ auto BufferPoolManager::FetchPage(page_id_t page_id, [[maybe_unused]] AccessType
     replacer_->RecordAccess(id);
     replacer_->SetEvictable(id, false);
     page->pin_count_ += 1;
-    latch_.unlock();
     return page;
   } else {
     Page *page;
@@ -98,13 +94,11 @@ auto BufferPoolManager::FetchPage(page_id_t page_id, [[maybe_unused]] AccessType
       page = pages_ + id;
     } else {
       if (!replacer_->Evict(&id)) {
-        latch_.unlock();
         return nullptr;
       }
       page = pages_ + id;
     }
     if (!page) {
-      latch_.unlock();
       return nullptr;
     }
     if (page->IsDirty()) {
@@ -125,7 +119,6 @@ auto BufferPoolManager::FetchPage(page_id_t page_id, [[maybe_unused]] AccessType
     auto future = promise.get_future();
     disk_scheduler_->Schedule({false, page->GetData(), page->GetPageId(), std::move(promise)});
     future.get();
-    latch_.unlock();
     return page;
   }
 }
@@ -136,12 +129,11 @@ auto BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty, [[maybe_unus
   } else if (page_table_.find(page_id) != page_table_.end()) {
     std::scoped_lock<std::mutex> lock(latch_);
     auto id = page_table_[page_id];
-    auto page = pages_ + id;
+    auto page = pages_+id;
     if (is_dirty) {
       page->is_dirty_ = is_dirty;
     }
     if (page->GetPinCount() == 0) {
-      latch_.unlock();
       return false;
     } else {
       page->pin_count_ -= 1;
@@ -149,10 +141,8 @@ auto BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty, [[maybe_unus
     if (page->GetPinCount() == 0) {
       replacer_->SetEvictable(id, true);
     }
-    latch_.unlock();
     return true;
   } else {
-    latch_.unlock();
     return false;
   }
 }
@@ -163,7 +153,6 @@ auto BufferPoolManager::FlushPage(page_id_t page_id) -> bool {
   }
   std::scoped_lock lock(latch_);
   if (page_table_.find(page_id) == page_table_.end()) {
-    latch_.unlock();
     return false;
   } else {
     auto page = pages_ + page_table_[page_id];
@@ -172,7 +161,6 @@ auto BufferPoolManager::FlushPage(page_id_t page_id) -> bool {
     disk_scheduler_->Schedule({true, page->GetData(), page->GetPageId(), std::move(promise)});
     future.get();
     page->is_dirty_ = false;
-    latch_.unlock();
     return true;
   }
 }
@@ -200,7 +188,6 @@ auto BufferPoolManager::DeletePage(page_id_t page_id) -> bool {
   auto id = page_table_[page_id];
   auto page = pages_ + id;
   if (page->GetPinCount() > 0) {
-    latch_.unlock();
     return false;
   } else {
     page_table_.erase(page_id);
@@ -211,7 +198,6 @@ auto BufferPoolManager::DeletePage(page_id_t page_id) -> bool {
     page->page_id_ = INVALID_PAGE_ID;
     page->ResetMemory();
     DeallocatePage(page_id);
-    latch_.unlock();
     return true;
   }
 }
@@ -223,21 +209,25 @@ auto BufferPoolManager::FetchPageBasic(page_id_t page_id) -> BasicPageGuard {
 }
 
 auto BufferPoolManager::FetchPageRead(page_id_t page_id) -> ReadPageGuard {
-  Page *page = FetchPage(page_id);
+  /* Page *page = FetchPage(page_id);
   if (page == nullptr) {
     return {this, nullptr};
   }
   // page->RLatch();
-  return {this, page};
+  return {this, page}; */
+  ReadPageGuard res=FetchPageBasic(page_id).UpgradeRead();
+  return res;
 }
 
 auto BufferPoolManager::FetchPageWrite(page_id_t page_id) -> WritePageGuard {
-  Page *page = FetchPage(page_id);
+  /* Page *page = FetchPage(page_id);
   if (page == nullptr) {
     return {this, nullptr};
   }
   // page->WLatch();
-  return {this, page};
+  return {this, page}; */
+  WritePageGuard res=FetchPageBasic(page_id).UpgradeWrite();
+  return res;
 }
 
 auto BufferPoolManager::NewPageGuarded(page_id_t *page_id) -> BasicPageGuard {

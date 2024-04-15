@@ -30,7 +30,6 @@ TEST(ExtendibleHTableTest, InsertTest1) {
   DiskExtendibleHashTable<int, int, IntComparator> ht("blah", bpm.get(), IntComparator(), HashFunction<int>(), 0, 2, 2);
 
   int num_keys = 8;
-
   // insert some values
   for (int i = 0; i < num_keys; i++) {
     bool inserted = ht.Insert(i, i);

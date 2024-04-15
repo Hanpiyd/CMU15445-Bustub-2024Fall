@@ -75,9 +75,7 @@ auto DiskExtendibleHashTable<K, V, KC>::GetValue(const K &key, std::vector<V> *r
     result->push_back(value);
     return true;
   }
-  else{
-    return false;
-  }
+  return false;
 }
 
 /*****************************************************************************
@@ -97,7 +95,7 @@ auto DiskExtendibleHashTable<K, V, KC>::Insert(const K &key, const V &value, Tra
   WritePageGuard dir_guard = bpm_->FetchPageWrite(dir_page_id);
   auto dir_page = dir_guard.AsMut<ExtendibleHTableDirectoryPage>();
   auto bucket_index = dir_page->HashToBucketIndex(hash);
-  page_id_t bucket_page_id = dir_page->GetBucketPageId(bucket_index);
+  auto bucket_page_id = dir_page->GetBucketPageId(bucket_index);
   if(bucket_page_id == INVALID_PAGE_ID){
     return InsertToNewBucket(dir_page,bucket_index,key,value);
   }
