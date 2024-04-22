@@ -131,7 +131,7 @@ class ExtendibleHTableBucketPage {
    */
   void PrintBucket() const;
 
-  void Clear() ;
+  void Clear();
 
  private:
   uint32_t size_;

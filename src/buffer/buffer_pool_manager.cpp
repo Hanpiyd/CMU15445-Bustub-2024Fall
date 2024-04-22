@@ -129,7 +129,7 @@ auto BufferPoolManager::UnpinPage(page_id_t page_id, bool is_dirty, [[maybe_unus
   } else if (page_table_.find(page_id) != page_table_.end()) {
     std::scoped_lock<std::mutex> lock(latch_);
     auto id = page_table_[page_id];
-    auto page = pages_+id;
+    auto page = pages_ + id;
     if (is_dirty) {
       page->is_dirty_ = is_dirty;
     }
@@ -215,7 +215,7 @@ auto BufferPoolManager::FetchPageRead(page_id_t page_id) -> ReadPageGuard {
   }
   // page->RLatch();
   return {this, page}; */
-  ReadPageGuard res=FetchPageBasic(page_id).UpgradeRead();
+  ReadPageGuard res = FetchPageBasic(page_id).UpgradeRead();
   return res;
 }
 
@@ -226,7 +226,7 @@ auto BufferPoolManager::FetchPageWrite(page_id_t page_id) -> WritePageGuard {
   }
   // page->WLatch();
   return {this, page}; */
-  WritePageGuard res=FetchPageBasic(page_id).UpgradeWrite();
+  WritePageGuard res = FetchPageBasic(page_id).UpgradeWrite();
   return res;
 }
 

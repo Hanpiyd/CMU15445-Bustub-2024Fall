@@ -20,15 +20,15 @@ namespace bustub {
 
 template <typename K, typename V, typename KC>
 void ExtendibleHTableBucketPage<K, V, KC>::Init(uint32_t max_size) {
-  this->max_size_=max_size;
-  this->size_=0;
+  this->max_size_ = max_size;
+  this->size_ = 0;
 }
 
 template <typename K, typename V, typename KC>
 auto ExtendibleHTableBucketPage<K, V, KC>::Lookup(const K &key, V &value, const KC &cmp) const -> bool {
-  for(auto i=0;i<this->size_;i++){
-    if(cmp(key,this->array_[i].first)==0){
-      value=this->array_[i].second;
+  for (auto i = 0; i < this->size_; i++) {
+    if (cmp(key, this->array_[i].first) == 0) {
+      value = this->array_[i].second;
       return true;
     }
   }
@@ -40,12 +40,12 @@ auto ExtendibleHTableBucketPage<K, V, KC>::Insert(const K &key, const V &value, 
   if (this->IsFull()) {
     return false;
   }
-  for(auto i=0;i<this->size_;i++){
-    if(cmp(key,this->array_[i].first)==0){
+  for (auto i = 0; i < this->size_; i++) {
+    if (cmp(key, this->array_[i].first) == 0) {
       return false;
     }
   }
-  this->array_[this->size_]=std::make_pair(key,value);
+  this->array_[this->size_] = std::make_pair(key, value);
   this->size_++;
   return true;
 }
@@ -63,8 +63,8 @@ auto ExtendibleHTableBucketPage<K, V, KC>::Remove(const K &key, const KC &cmp) -
 
 template <typename K, typename V, typename KC>
 void ExtendibleHTableBucketPage<K, V, KC>::RemoveAt(uint32_t bucket_idx) {
-  for(auto i=bucket_idx;i<size_;i++){
-    array_[i]=array_[i+1];
+  for (auto i = bucket_idx; i < size_; i++) {
+    array_[i] = array_[i + 1];
   }
   size_--;
 }
@@ -91,12 +91,12 @@ auto ExtendibleHTableBucketPage<K, V, KC>::Size() const -> uint32_t {
 
 template <typename K, typename V, typename KC>
 auto ExtendibleHTableBucketPage<K, V, KC>::IsFull() const -> bool {
-  return this->size_==this->max_size_;
+  return this->size_ == this->max_size_;
 }
 
 template <typename K, typename V, typename KC>
 auto ExtendibleHTableBucketPage<K, V, KC>::IsEmpty() const -> bool {
-  return this->size_==0;
+  return this->size_ == 0;
 }
 
 template <typename K, typename V, typename KC>

@@ -157,7 +157,6 @@ class ReadPageGuard {
    */
   ~ReadPageGuard();
 
-
   auto PageId() -> page_id_t { return guard_.PageId(); }
 
   auto GetData() -> const char * { return guard_.GetData(); }

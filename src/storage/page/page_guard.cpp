@@ -25,7 +25,7 @@ auto BasicPageGuard::operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard
   bpm_ = std::move(that.bpm_);
   page_ = std::move(that.page_);
   is_dirty_ = std::move(that.is_dirty_);
-  that.page_ = nullptr; 
+  that.page_ = nullptr;
   return *this;
 }
 
@@ -54,8 +54,8 @@ auto BasicPageGuard::UpgradeWrite() -> WritePageGuard {
 ReadPageGuard::ReadPageGuard(BufferPoolManager *bpm, Page *page) : guard_(bpm, page) {}
 
 ReadPageGuard::ReadPageGuard(ReadPageGuard &&that) noexcept {
-   guard_ = std::move(that.guard_); 
-   that.guard_.page_ = nullptr; 
+  guard_ = std::move(that.guard_);
+  that.guard_.page_ = nullptr;
 }
 
 auto ReadPageGuard::operator=(ReadPageGuard &&that) noexcept -> ReadPageGuard & {
