@@ -19,6 +19,7 @@
 #include "execution/executors/abstract_executor.h"
 #include "execution/plans/window_plan.h"
 #include "storage/table/tuple.h"
+#include "execution/plans/aggregation_plan.h"
 
 namespace bustub {
 
@@ -85,10 +86,16 @@ class WindowFunctionExecutor : public AbstractExecutor {
   auto GetOutputSchema() const -> const Schema & override { return plan_->OutputSchema(); }
 
  private:
+  auto MakeAggregateKey(const Tuple *tuple, const std::vector<AbstractExpressionRef> &partition_by)
+      -> bustub::AggregateKey;
   /** The window aggregation plan node to be executed */
   const WindowFunctionPlanNode *plan_;
 
   /** The child executor from which tuples are obtained */
   std::unique_ptr<AbstractExecutor> child_executor_;
+  std::vector<Tuple> tuples_buffer_;
+  std::vector<std::vector<Value>> output_;
+  std::vector<Tuple>::iterator tuple_buffer_it_;
+  std::vector<std::vector<Value>>::iterator output_it_;
 };
 }  // namespace bustub

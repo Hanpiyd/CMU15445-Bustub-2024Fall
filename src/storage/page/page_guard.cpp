@@ -32,9 +32,9 @@ auto BasicPageGuard::operator=(BasicPageGuard &&that) noexcept -> BasicPageGuard
 BasicPageGuard::~BasicPageGuard() { Drop(); };  // NOLINT
 
 auto BasicPageGuard::UpgradeRead() -> ReadPageGuard {
-  if (page_ != nullptr) {
+  /* if (page_ != nullptr) {
     page_->RLatch();
-  }
+  } */
   ReadPageGuard res(this->bpm_, this->page_);
   bpm_ = nullptr;
   page_ = nullptr;
@@ -42,9 +42,9 @@ auto BasicPageGuard::UpgradeRead() -> ReadPageGuard {
 }
 
 auto BasicPageGuard::UpgradeWrite() -> WritePageGuard {
-  if (page_ != nullptr) {
+  /* if (page_ != nullptr) {
     page_->WLatch();
-  }
+  } */
   WritePageGuard res(this->bpm_, this->page_);
   bpm_ = nullptr;
   page_ = nullptr;
@@ -72,7 +72,7 @@ void ReadPageGuard::Drop() {
   if (guard_.page_ == nullptr) {
     return;
   }
-  guard_.page_->RUnlatch();
+  /* guard_.page_->RUnlatch(); */
   guard_.Drop();
   return;
 }
@@ -96,7 +96,7 @@ void WritePageGuard::Drop() {
   if (guard_.page_ == nullptr) {
     return;
   }
-  guard_.page_->WUnlatch();
+  /* guard_.page_->WUnlatch(); */
   guard_.Drop();
   return;
 }

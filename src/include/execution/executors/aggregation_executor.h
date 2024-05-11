@@ -25,6 +25,7 @@
 #include "execution/plans/aggregation_plan.h"
 #include "storage/table/tuple.h"
 #include "type/value_factory.h"
+#include "type/type.h"
 
 namespace bustub {
 
@@ -72,12 +73,46 @@ class SimpleAggregationHashTable {
    */
   void CombineAggregateValues(AggregateValue *result, const AggregateValue &input) {
     for (uint32_t i = 0; i < agg_exprs_.size(); i++) {
+      Value &old_res_val = result->aggregates_[i];
+      const Value &new_val = input.aggregates_[i];
       switch (agg_types_[i]) {
         case AggregationType::CountStarAggregate:
+          old_res_val = old_res_val.Add(Value(TypeId::INTEGER, 1));
+          break;
         case AggregationType::CountAggregate:
+          if (!new_val.IsNull()) {
+            if (old_res_val.IsNull()) {
+              old_res_val = ValueFactory::GetIntegerValue(0);
+            }
+            old_res_val = old_res_val.Add(Value(TypeId::INTEGER, 1));
+          }
+          break;
         case AggregationType::SumAggregate:
+          if (!new_val.IsNull()) {
+            if (old_res_val.IsNull()) {
+              old_res_val = new_val;
+            } else {
+              old_res_val = old_res_val.Add(new_val);
+            }
+          }
+          break;
         case AggregationType::MinAggregate:
+          if (!new_val.IsNull()) {
+            if (old_res_val.IsNull()) {
+              old_res_val = new_val;
+            } else {
+              old_res_val = new_val.CompareLessThan(old_res_val) == CmpBool::CmpTrue ? new_val.Copy() : old_res_val;
+            }
+          }
+          break;
         case AggregationType::MaxAggregate:
+          if (!new_val.IsNull()) {
+            if (old_res_val.IsNull()) {
+              old_res_val = new_val;
+            } else {
+              old_res_val = new_val.CompareGreaterThan(old_res_val) == CmpBool::CmpTrue ? new_val.Copy() : old_res_val;
+            }
+          }
           break;
       }
     }
@@ -204,8 +239,10 @@ class AggregationExecutor : public AbstractExecutor {
 
   /** Simple aggregation hash table */
   // TODO(Student): Uncomment SimpleAggregationHashTable aht_;
-
+  std::unique_ptr<SimpleAggregationHashTable> aht_;
   /** Simple aggregation hash table iterator */
   // TODO(Student): Uncomment SimpleAggregationHashTable::Iterator aht_iterator_;
+  std::unique_ptr<SimpleAggregationHashTable::Iterator> aht_iterator_;
+  bool is_end_{false};
 };
 }  // namespace bustub

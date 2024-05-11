@@ -209,23 +209,11 @@ auto BufferPoolManager::FetchPageBasic(page_id_t page_id) -> BasicPageGuard {
 }
 
 auto BufferPoolManager::FetchPageRead(page_id_t page_id) -> ReadPageGuard {
-  /* Page *page = FetchPage(page_id);
-  if (page == nullptr) {
-    return {this, nullptr};
-  }
-  // page->RLatch();
-  return {this, page}; */
   ReadPageGuard res = FetchPageBasic(page_id).UpgradeRead();
   return res;
 }
 
 auto BufferPoolManager::FetchPageWrite(page_id_t page_id) -> WritePageGuard {
-  /* Page *page = FetchPage(page_id);
-  if (page == nullptr) {
-    return {this, nullptr};
-  }
-  // page->WLatch();
-  return {this, page}; */
   WritePageGuard res = FetchPageBasic(page_id).UpgradeWrite();
   return res;
 }
@@ -234,4 +222,4 @@ auto BufferPoolManager::NewPageGuarded(page_id_t *page_id) -> BasicPageGuard {
   return BasicPageGuard(this, NewPage(page_id));
 }
 
-}  // namespace bustub
+}  // namespace bustub 
